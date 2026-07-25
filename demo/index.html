@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Voice Agent Gateway — Barge-in Simulator</title>
+  <style>
+    :root{color-scheme:dark;--bg:#090b16;--panel:#121629;--line:#292f4d;--text:#f7f7ff;--muted:#a5aac7;--violet:#9f8cff;--mint:#55e7be;--orange:#ffb76c;font-family:Inter,system-ui,sans-serif}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 80% 0,#36255b 0,transparent 38%),var(--bg);color:var(--text)}
+    main{width:min(1140px,calc(100% - 32px));margin:auto;padding:44px 0}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.18em;color:var(--mint);font-weight:800}
+    h1{font-size:clamp(38px,6vw,68px);line-height:1;letter-spacing:-.045em;max-width:850px;margin:12px 0}.lede{color:var(--muted);max-width:760px;font-size:18px;line-height:1.6}
+    .layout{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:28px}.panel{border:1px solid var(--line);border-radius:22px;background:#111526e8;padding:20px;box-shadow:0 28px 80px #0007}
+    .wave{height:130px;display:flex;align-items:center;justify-content:center;gap:5px;border-radius:16px;background:#090d1b;overflow:hidden}.bar{width:5px;border-radius:999px;background:linear-gradient(var(--violet),var(--mint));animation:pulse 1.2s ease-in-out infinite}.bar:nth-child(3n){animation-delay:.2s}.bar:nth-child(4n){animation-delay:.4s}@keyframes pulse{50%{transform:scaleY(.35);opacity:.55}}
+    .controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}button{padding:12px;border:0;border-radius:12px;background:var(--violet);color:#fff;font:inherit;font-weight:800;cursor:pointer}button.secondary{background:#202744;color:var(--text);border:1px solid var(--line)}button.interrupt{background:var(--orange);color:#2b1600}
+    .transcript{margin-top:16px;display:grid;gap:10px}.bubble{max-width:86%;border-radius:16px;padding:12px 14px;line-height:1.5;background:#202744}.bubble.agent{margin-left:auto;background:#17372f}.lang{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--mint);font-weight:900}
+    .events{display:grid;gap:9px}.event{padding:11px 12px;border-radius:12px;background:#0a0e1c;border:1px solid #202744}.kind{font:12px ui-monospace,monospace;color:var(--violet)}.detail{font-size:13px;color:var(--muted);margin-top:5px}.status{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.pill{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:7px 10px}.good{color:var(--mint)}.warn{color:var(--orange)}
+    .scope{margin-top:14px;color:var(--muted);font-size:12px;line-height:1.5}.scope strong{color:var(--text)}
+    @media(max-width:800px){.layout{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Text-orchestration simulator · synthetic data</div>
+  <h1>Bilingual streaming with interruption you can inspect.</h1>
+  <p class="lede">The local simulator demonstrates ordered frames, Arabic/English response paths, barge-in, duplicate suppression, and bounded retries. It does not claim real STT/TTS accuracy.</p>
+  <section class="layout">
+    <div class="panel">
+      <div id="wave" class="wave"></div>
+      <div class="controls">
+        <button data-lang="en">Send English frame</button>
+        <button data-lang="ar">إرسال إطار عربي</button>
+        <button id="interrupt" class="interrupt">Barge in</button>
+        <button id="duplicate" class="secondary">Replay duplicate</button>
+      </div>
+      <div id="transcript" class="transcript"></div>
+    </div>
+    <div class="panel">
+      <div id="status" class="status"></div>
+      <div id="events" class="events"></div>
+      <p class="scope"><strong>Measured boundary:</strong> this evaluates text-agent routing and gateway state. Telephony, real audio, speech recognition, and synthesis providers remain mocked.</p>
+    </div>
+  </section>
+</main>
+<script>
+const wave=document.getElementById("wave");for(let i=0;i<42;i++){const b=document.createElement("span");b.className="bar";b.style.height=`${24+(i*17)%90}px`;wave.appendChild(b)}
+let sequence=0,speaking=false,events=[];const $=id=>document.getElementById(id);
+function add(kind,detail){events.push({kind,detail,sequence});events=events.slice(-7)}
+function render(status="idle"){
+  $("status").innerHTML=`<span class="pill ${status==="streaming"?"good":"warn"}">status: ${status}</span><span class="pill">sequence: ${sequence}</span><span class="pill">retries: bounded ≤ 2</span>`;
+  $("events").innerHTML=events.map(e=>`<div class="event"><div class="kind">${e.kind}</div><div class="detail">${e.detail}</div></div>`).join("");
+}
+function send(lang){
+  sequence++;if(speaking)add("speech.interrupted","New caller frame stopped active output");
+  add("frame.accepted",`Ordered frame ${sequence}`);add("stt.completed",lang==="ar"?"طلب تجريبي بالعربية":"Synthetic English request");speaking=true;add("tts.started",lang==="ar"?"تم استلام طلبك التجريبي":"Your synthetic request was received");
+  $("transcript").innerHTML+=`<div class="bubble"><span class="lang">${lang}</span><br>${lang==="ar"?"مرحباً، أحتاج مساعدة.":"Hello, I need help."}</div><div class="bubble agent"><span class="lang">${lang}</span><br>${lang==="ar"?"تم استلام طلبك التجريبي. هل تريد المتابعة؟":"Your synthetic request was received. Would you like to continue?"}</div>`;render("streaming")
+}
+document.querySelectorAll("[data-lang]").forEach(b=>b.onclick=()=>send(b.dataset.lang));
+$("interrupt").onclick=()=>{sequence++;if(speaking){speaking=false;add("speech.interrupted","Caller barge-in cancelled synthesized output");render("interrupted")}else{add("frame.accepted","No active output to interrupt");render("idle")}};
+$("duplicate").onclick=()=>{add("frame.duplicate",`Ignored replay of sequence ${sequence}`);render("duplicate")};render();
+</script>
+</body>
+</html>

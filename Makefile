@@ -1,4 +1,7 @@
-.PHONY: test eval demo
+.PHONY: test eval demo eval-live eval-live-canary eval-live-validate
+
+TRIALS ?= 5
+MAX_COST_USD ?= 25
 test:
 	PYTHONPATH=src python3 -m unittest discover -s tests -v
 eval:
@@ -6,3 +9,11 @@ eval:
 demo:
 	PYTHONPATH=src python3 -m voice_gateway.demo
 
+eval-live:
+	PYTHONPATH=src python3 evals/live.py --provider "$(PROVIDER)" --model "$(MODEL)" --trials "$(TRIALS)" --max-cost-usd "$(MAX_COST_USD)"
+
+eval-live-canary:
+	PYTHONPATH=src python3 evals/live.py --provider "$(PROVIDER)" --model "$(MODEL)" --canary --max-cost-usd "$(MAX_COST_USD)"
+
+eval-live-validate:
+	PYTHONPATH=src python3 evals/live.py --validate-only
