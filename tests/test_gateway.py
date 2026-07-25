@@ -14,6 +14,11 @@ class GatewayTests(unittest.TestCase):
         self.assertEqual(result["language"], "ar")
         self.assertIn("تم", result["response"])
 
+    def test_normalizes_arabic_language_tag(self):
+        result = VoiceGateway().receive(AudioFrame(1, "مرحبا".encode(), "AR-SA"))
+        self.assertEqual(result["language"], "ar")
+        self.assertIn("تم", result["response"])
+
     def test_barge_in_interrupts_output(self):
         gateway = VoiceGateway()
         gateway.receive(AudioFrame(1, b"first"))
@@ -31,4 +36,3 @@ class GatewayTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

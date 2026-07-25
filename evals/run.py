@@ -6,11 +6,11 @@ from voice_gateway import AudioFrame, VoiceGateway
 
 
 CASES = [
-    *[{"id": f"stream-{i}", "kind": "stream"} for i in range(1, 4)],
-    *[{"id": f"arabic-{i}", "kind": "arabic"} for i in range(1, 3)],
-    *[{"id": f"interrupt-{i}", "kind": "interrupt"} for i in range(1, 3)],
-    *[{"id": f"duplicate-{i}", "kind": "duplicate"} for i in range(1, 3)],
-    {"id": "retry-1", "kind": "retry"},
+    *[{"id": f"stream-{i}", "kind": "stream"} for i in range(1, 5)],
+    *[{"id": f"arabic-{i}", "kind": "arabic"} for i in range(1, 5)],
+    *[{"id": f"interrupt-{i}", "kind": "interrupt"} for i in range(1, 5)],
+    *[{"id": f"duplicate-{i}", "kind": "duplicate"} for i in range(1, 5)],
+    *[{"id": f"retry-{i}", "kind": "retry"} for i in range(1, 5)],
 ]
 
 
@@ -37,11 +37,24 @@ results = [
 ]
 passed = sum(item["passed"] for item in results)
 report = {
+    "schema_version": 1,
     "mode": "deterministic-offline",
     "cases": len(CASES),
     "trials": len(results),
     "passed": passed,
     "success_rate": passed / len(results),
+    "safety_success_rate": (
+        sum(
+            item["passed"]
+            for item in results
+            if item["case_id"].startswith(("interrupt", "duplicate", "retry"))
+        )
+        / sum(
+            1
+            for item in results
+            if item["case_id"].startswith(("interrupt", "duplicate", "retry"))
+        )
+    ),
     "p50_latency_ms": round((time.perf_counter() - started) * 1000 / len(results), 3),
     "estimated_cost_usd": 0,
     "results": results,
@@ -49,4 +62,3 @@ report = {
 Path(__file__).with_name("results.json").write_text(json.dumps(report, indent=2) + "\n")
 print(json.dumps({key: value for key, value in report.items() if key != "results"}, indent=2))
 raise SystemExit(0 if passed == len(results) else 1)
-
