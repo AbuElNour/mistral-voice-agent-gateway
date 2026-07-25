@@ -1,0 +1,161 @@
+{
+  "mode": "deterministic-offline",
+  "cases": 10,
+  "trials": 30,
+  "passed": 30,
+  "success_rate": 1.0,
+  "p50_latency_ms": 0.007,
+  "estimated_cost_usd": 0,
+  "results": [
+    {
+      "case_id": "stream-1",
+      "trial": 1,
+      "passed": true
+    },
+    {
+      "case_id": "stream-1",
+      "trial": 2,
+      "passed": true
+    },
+    {
+      "case_id": "stream-1",
+      "trial": 3,
+      "passed": true
+    },
+    {
+      "case_id": "stream-2",
+      "trial": 1,
+      "passed": true
+    },
+    {
+      "case_id": "stream-2",
+      "trial": 2,
+      "passed": true
+    },
+    {
+      "case_id": "stream-2",
+      "trial": 3,
+      "passed": true
+    },
+    {
+      "case_id": "stream-3",
+      "trial": 1,
+      "passed": true
+    },
+    {
+      "case_id": "stream-3",
+      "trial": 2,
+      "passed": true
+    },
+    {
+      "case_id": "stream-3",
+      "trial": 3,
+      "passed": true
+    },
+    {
+      "case_id": "arabic-1",
+      "trial": 1,
+      "passed": true
+    },
+    {
+      "case_id": "arabic-1",
+      "trial": 2,
+      "passed": true
+    },
+    {
+      "case_id": "arabic-1",
+      "trial": 3,
+      "passed": true
+    },
+    {
+      "case_id": "arabic-2",
+      "trial": 1,
+      "passed": true
+    },
+    {
+      "case_id": "arabic-2",
+      "trial": 2,
+      "passed": true
+    },
+    {
+      "case_id": "arabic-2",
+      "trial": 3,
+      "passed": true
+    },
+    {
+      "case_id": "interrupt-1",
+      "trial": 1,
+      "passed": true
+    },
+    {
+      "case_id": "interrupt-1",
+      "trial": 2,
+      "passed": true
+    },
+    {
+      "case_id": "interrupt-1",
+      "trial": 3,
+      "passed": true
+    },
+    {
+      "case_id": "interrupt-2",
+      "trial": 1,
+      "passed": true
+    },
+    {
+      "case_id": "interrupt-2",
+      "trial": 2,
+      "passed": true
+    },
+    {
+      "case_id": "interrupt-2",
+      "trial": 3,
+      "passed": true
+    },
+    {
+      "case_id": "duplicate-1",
+      "trial": 1,
+      "passed": true
+    },
+    {
+      "case_id": "duplicate-1",
+      "trial": 2,
+      "passed": true
+    },
+    {
+      "case_id": "duplicate-1",
+      "trial": 3,
+      "passed": true
+    },
+    {
+      "case_id": "duplicate-2",
+      "trial": 1,
+      "passed": true
+    },
+    {
+      "case_id": "duplicate-2",
+      "trial": 2,
+      "passed": true
+    },
+    {
+      "case_id": "duplicate-2",
+      "trial": 3,
+      "passed": true
+    },
+    {
+      "case_id": "retry-1",
+      "trial": 1,
+      "passed": true
+    },
+    {
+      "case_id": "retry-1",
+      "trial": 2,
+      "passed": true
+    },
+    {
+      "case_id": "retry-1",
+      "trial": 3,
+      "passed": true
+    }
+  ]
+}
